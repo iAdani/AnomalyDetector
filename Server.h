@@ -8,6 +8,13 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 #include <thread>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <signal.h>
+
+#include "commands.h"
+#include "CLI.h"
 
 
 using namespace std;
@@ -20,13 +27,31 @@ class ClientHandler{
 
 
 // you can add helper classes here and implement on the cpp file
+class SocketIO : public DefaultIO {
+    int ID;
+
+public:
+    SocketIO(int id) {
+        ID = id;
+    }
+    virtual string read(); // reads from socket
+    virtual void write(string text); // writes to output
+    virtual void write(float f); // writes to output
+    virtual void read(float* f);// reads from socket
+    virtual ~SocketIO() { };
+};
+
 
 
 // edit your AnomalyDetectionHandler class here
 class AnomalyDetectionHandler:public ClientHandler{
 	public:
-    virtual void handle(int clientID){
 
+    // "handle" the client once he connects
+    virtual void handle(int clientID){
+        SocketIO io(clientID);
+        CLI cli(&io);
+        cli.start();
     }
 };
 
@@ -34,7 +59,8 @@ class AnomalyDetectionHandler:public ClientHandler{
 // implement on Server.cpp
 class Server {
 	thread* t; // the thread to run the start() method in
-
+    bool isListening;
+    int server_fd;
 	// you may add data members
 
 public:

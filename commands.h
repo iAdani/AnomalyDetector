@@ -83,7 +83,7 @@ public:
         train.open("anomalyTrain.csv");
         io->write("Please upload your local train CSV file.\n");
         input = io->read();
-        while (input.compare("done") != 0) {
+        while (input.compare("done") != 0 && input.compare("done\n") != 0) {
             train << input << "\n";
             input = io->read();
         }

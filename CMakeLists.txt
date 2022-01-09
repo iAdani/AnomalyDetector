@@ -3,6 +3,8 @@ project(Mitkadem1Ex6)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_CXX_FLAGS -pthread)
+
 include_directories(.)
 
 add_executable(Mitkadem1Ex6
