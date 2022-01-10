@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <sstream>
 
 #include "commands.h"
 #include "CLI.h"
@@ -61,6 +62,7 @@ class Server {
 	thread* t; // the thread to run the start() method in
     bool isListening;
     int server_fd;
+    sockaddr_in client;
 	// you may add data members
 
 public:

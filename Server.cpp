@@ -6,11 +6,11 @@
 
 // reads from socket
 string SocketIO::read(){
-    string s;
+    string s = "";
     char input = 0;
 
     while(input != '\n') {
-        input = recv(ID, &input, sizeof(char), 0);
+        recv(ID, &input, sizeof(char), 0);
         s += input;
     }
 
@@ -19,19 +19,20 @@ string SocketIO::read(){
 
 // writes to output
 void SocketIO::write(string text){
-    char output[text.length() + 1];
-    strcpy(output, text.c_str());
+    const char *output = text.c_str();
     send(ID, output, strlen(output), 0);
 }
 
 // writes to output
 void SocketIO::write(float f){
-    write(to_string(f));
+    ostringstream stream;
+    stream << f;
+    string output(stream.str());
+    write(output);
 }
 
 // sadly this is useless
-void SocketIO::read(float* f){ }
-
+void SocketIO::read(float* f) { }
 
 // ---------- Server ----------
 
@@ -41,7 +42,7 @@ Server::Server(int port) throw (const char*) {
 
     // creating socket file description
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_fd == 0) {
+    if (server_fd < 0) {
         throw "socket failed!";
     }
     address.sin_family = AF_INET;
@@ -62,19 +63,19 @@ Server::Server(int port) throw (const char*) {
 }
 
 // used to handle the signal alarm
-void alarm_handler(int) { cout << "handling..." << endl; }
+void alarm_handler(int a) { cout << "handling..." << endl; }
 
 void Server::start(ClientHandler& ch) throw(const char*) {
     // making a thread to interact with the client, using a lambda expression
     t = new thread([&, this]() {
         signal(SIGALRM, alarm_handler);
-        int size = sizeof(sockaddr_in);
         while (isListening) {
-            alarm(2);
-            int client = accept(server_fd, (struct sockaddr *)&client, (socklen_t*)&size);
-            if (client > 0) {
-                ch.handle(client);
-                close(client);
+            alarm(3);
+            socklen_t size = sizeof(client);
+            int curClient = accept(server_fd, (struct sockaddr *)&client, &size);
+            if (curClient > 0) {
+                ch.handle(curClient);
+                close(curClient);
             }
             alarm(0);
         }

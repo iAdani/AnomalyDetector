@@ -20,10 +20,12 @@ void CLI::start(){
     while (isRunning) {
         dio->write(menu);
         option = dio->read();
-        if (option.compare("6") == 0) {
+        if (option == "6" || option == "6\n") {
             exit();
         } else {
-            commands[stoi(option) - 1]->execute();
+            string s = "";
+            s += option[0];
+            commands[stoi(s) - 1]->execute();
         }
     }
 }

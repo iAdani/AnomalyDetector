@@ -83,8 +83,8 @@ public:
         train.open("anomalyTrain.csv");
         io->write("Please upload your local train CSV file.\n");
         input = io->read();
-        while (input.compare("done") != 0 && input.compare("done\n") != 0) {
-            train << input << "\n";
+        while (input != "done" && input != "done\n") {
+            train << input;
             input = io->read();
         }
         train.close();
@@ -94,8 +94,8 @@ public:
         test.open("anomalyTest.csv");
         io->write("Please upload your local test CSV file.\n");
         input = io->read();
-        while (input.compare("done") != 0) {
-            test << input << "\n";
+        while (input != "done" && input != "done\n") {
+            test << input;
             input = io->read();
         }
         test.close();
@@ -234,10 +234,10 @@ public:
         vector<int> ends;                              // the last detections from the file
         int commaPos = 0;                               // used to find the comma position in the input
         string input = io->read();
-        while (input.compare("done") != 0) {
+        while (input != "done" && input != "done\n") {
             commaPos = input.find(',');
             begins.push_back(stoi(input.substr(0, commaPos)));
-            ends.push_back(stoi(input.substr(commaPos + 1)));
+            ends.push_back(stoi(input.substr(commaPos + 1, input.length() - commaPos - 2)));
             input = io->read();
         }
         io->write("Upload complete.\n");
